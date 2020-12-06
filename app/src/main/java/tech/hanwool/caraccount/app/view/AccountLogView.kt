@@ -5,7 +5,7 @@ import tech.hanwool.caraccount.database.model.AccountLog
 import java.util.*
 
 @DatabaseView("SELECT * from account_log")
-data class AccountLog(
+data class AccountLogView(
     val timestamp: Date,
     val accountLogType: AccountLog.AccountLogType,
     val cumulativeDistance: Float,

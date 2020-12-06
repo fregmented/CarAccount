@@ -1,4 +1,4 @@
-package tech.hanwool.caraccount
+package tech.hanwool.caraccount.app
 
 import android.app.Application
 

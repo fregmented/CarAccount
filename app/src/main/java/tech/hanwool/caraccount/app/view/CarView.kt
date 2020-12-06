@@ -6,7 +6,7 @@ import tech.hanwool.caraccount.database.model.Car
 import tech.hanwool.caraccount.database.util.FuelTypeConverter
 
 @DatabaseView("SELECT * FROM car")
-data class Car(
+data class CarView(
     val regNum: String,
     val vin: String,
     val fuelType: Car.FuelType,
