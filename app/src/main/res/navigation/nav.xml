@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav">
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav"
+    app:startDestination="@id/fragmentInformation">
 
+    <fragment
+        android:id="@+id/fragmentInformation"
+        android:name="tech.hanwool.caraccount.app.fragments.FragmentInformation"
+        android:label="FragmentStat" />
 </navigation>

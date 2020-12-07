@@ -1,4 +1,4 @@
-package tech.hanwool.caraccount.api.model
+package tech.hanwool.caraccount.api.opinet.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -12,5 +12,5 @@ data class AveragePriceAll(
     @SerializedName("PRICE")
     val price: Float,
     @SerializedName("DIFF")
-    val diff: Int
+    val diff: Float
 )

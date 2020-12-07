@@ -1,9 +1,9 @@
+package tech.hanwool.caraccount.api.navermap
+
 /**
  * Initialize OkHTTP, Retrofit, ApiClient
  */
-package tech.hanwool.caraccount.api
 
-import android.os.Build
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -13,12 +13,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import tech.hanwool.caraccount.BuildConfig
 
-object OpinetApiClient {
-    private val baseUrl = "http://www.opinet.co.kr/api/"
-    private val apiCode = BuildConfig.OPINET_API_KEY
+object NaverMapApiClient {
+    private val baseUrl = "https://naveropenapi.apigw.ntruss.com/"
+    private val apiId = BuildConfig.NAVER_MAP_API_ID
+    private val apiKey = BuildConfig.NAVER_MAP_API_SECRET
     private val retrofit: Retrofit
     private val okHttpClient: OkHttpClient
-    val client: OpinetApi
+    val client: NaverMapApi
 
     init {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
@@ -32,13 +33,17 @@ object OpinetApiClient {
                 val newReq = request.newBuilder().apply {
                     url(request.url.newBuilder().apply {
                         // Add new Query string to request url
-                        addQueryParameter("code", apiCode)
+                        addHeader("X-NCP-APIGW-API-KEY-ID", apiId)
+                        addHeader("X-NCP-APIGW-API-KEY", apiKey)
+                        addHeader("Accept",  "application/json")
                         addQueryParameter("out", "json")
                     }.build())
                 }.build()
                 return@Interceptor it.proceed(newReq)
             })
         }.build()
+
+
 
         retrofit = Retrofit.Builder().apply {
             baseUrl(baseUrl)
@@ -47,6 +52,6 @@ object OpinetApiClient {
             addConverterFactory(GsonConverterFactory.create())
         }.build()
 
-        client = retrofit.create(OpinetApi::class.java)
+        client = retrofit.create(NaverMapApi::class.java)
     }
 }

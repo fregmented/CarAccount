@@ -6,8 +6,8 @@ import androidx.room.Relation
 data class CarAndAccountLogs(
     @Embedded val car: Car,
     @Relation(
-        parentColumn = "car",
-        entityColumn = "account_log"
+        parentColumn = "regNum",
+        entityColumn = "timestamp"
     )
     val accountLogs: List<AccountLog>
 )

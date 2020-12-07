@@ -1,4 +1,4 @@
-package tech.hanwool.caraccount.api
+package tech.hanwool.caraccount.api.opinet
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.Converter
@@ -16,16 +16,19 @@ class EnumConverterFactory : Converter.Factory() {
         annotations: Array<Annotation>,
         retrofit: Retrofit
     ): Converter<Enum<*>, String>? =
-        if (type is Class<*> && type.isEnum) {
-            Converter { enum ->
-                try {
-                    enum.javaClass.getField(enum.name)
-                        .getAnnotation(SerializedName::class.java)?.value
-                } catch (exception: Exception) {
-                    null
-                } ?: enum.toString()
-            }
-        } else {
-            null
+        Converter { enum ->
+            try {
+                convertEnumToString(type, enum)
+            } catch (exception: Exception) {
+                null
+            } ?: enum.toString()
         }
 }
+
+fun convertEnumToString(type: Type, enum: Enum<*>): String? =
+    if (type is Class<*> && type.isEnum) {
+        enum.javaClass.getField(enum.name)
+            .getAnnotation(SerializedName::class.java)?.value
+    } else {
+        null
+    }

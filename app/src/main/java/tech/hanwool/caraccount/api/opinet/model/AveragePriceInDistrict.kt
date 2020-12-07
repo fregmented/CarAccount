@@ -1,4 +1,4 @@
-package tech.hanwool.caraccount.api.model
+package tech.hanwool.caraccount.api.opinet.model
 
 import com.google.gson.annotations.SerializedName
 

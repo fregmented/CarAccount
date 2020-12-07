@@ -16,12 +16,16 @@ abstract class IntEnumConverter<T : Enum<T>> {
 }
 
 class FuelTypeConverter: IntEnumConverter<Car.FuelType>() {
+    @TypeConverter
     override fun intEnumToInt(value: Car.FuelType): Int = value.toInt()
+    @TypeConverter
     override fun intToEnumInt(value: Int): Car.FuelType = value.toIntEnum()
 }
 
 class AccountLogTypeConverter: IntEnumConverter<AccountLog.AccountLogType>() {
+    @TypeConverter
     override fun intEnumToInt(value: AccountLog.AccountLogType): Int = value.toInt()
+    @TypeConverter
     override fun intToEnumInt(value: Int): AccountLog.AccountLogType = value.toIntEnum()
 }
 
