@@ -16,19 +16,19 @@ class EnumConverterFactory : Converter.Factory() {
         annotations: Array<Annotation>,
         retrofit: Retrofit
     ): Converter<Enum<*>, String>? =
+        if (type is Class<*> && type.isEnum) {
         Converter { enum ->
             try {
-                convertEnumToString(type, enum)
+                convertSerializedEnumToString(enum)
             } catch (exception: Exception) {
                 null
             } ?: enum.toString()
         }
+        } else {
+            null
+        }
 }
 
-fun convertEnumToString(type: Type, enum: Enum<*>): String? =
-    if (type is Class<*> && type.isEnum) {
+fun convertSerializedEnumToString(enum: Enum<*>): String? =
         enum.javaClass.getField(enum.name)
             .getAnnotation(SerializedName::class.java)?.value
-    } else {
-        null
-    }

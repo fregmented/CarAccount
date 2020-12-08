@@ -1,7 +1,6 @@
 package tech.hanwool.caraccount.api.opinet
 
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 import tech.hanwool.caraccount.api.opinet.model.*
@@ -11,7 +10,7 @@ interface OpinetApi {
      * 전국 평균 가격들을 불러옵니다.
      */
     @GET("avgAllPrice.do")
-    fun getAvrgPriceAll(): Observable<OpinetResponse<List<AveragePriceAll>>>
+    fun getAvrgPriceAll(): Observable<OpinetResponse<AveragePrice>>
 
     /**
      * 지정된 시도 내의 지정된 유종의 평균 가격을 불러옵니다.
@@ -21,7 +20,7 @@ interface OpinetApi {
     @GET("avgSidoPrice.do")
     fun getAvrgPriceInMetropolitan(@Query("sido") metropolitanCode:String? = null,
                                    @Query("prodcd") fuelTypeCode: FuelTypeCode
-    ): Single<OpinetResponse<AveragePriceInMetropolitan>>
+    ): Observable<OpinetResponse<AveragePrice>>
 
     /**
      * 지정된 시군구 내의 지정된 유종의 평균 가격을 불러옵니다.
@@ -32,7 +31,7 @@ interface OpinetApi {
     @GET("avgSigunPrice.do")
     fun getAvrgPriceInDistrict(@Query("sido") metropolitanCode: String? = null,
                                @Query("sigun") districtCode: String? = null,
-                               @Query("prodcd") fuelTypeCode: FuelTypeCode? = null): Single<OpinetResponse<AveragePriceInDistrict>>
+                               @Query("prodcd") fuelTypeCode: FuelTypeCode? = null): Observable<OpinetResponse<AveragePrice>>
 
     /**
      * 지정된 지역의 지정된 유종 최저가격 주유소 목록을 불러옵니다.
@@ -43,7 +42,7 @@ interface OpinetApi {
     @GET("lowTop10.do")
     fun getLowestInDistrict(@Query("prodcd") fuelType: FuelTypeCode,
                             @Query("area") areaCode: String?,
-                            @Query("cnt") count: Int = 10): Observable<OpinetResponse<List<StationInfo>>>
+                            @Query("cnt") count: Int = 10): Observable<OpinetResponse<StationInfo>>
 
     /**
      * 지정된 죄표 주변의 지정된 유종을 판매하는 주유소 목록을 불러옵니다.
@@ -62,5 +61,5 @@ interface OpinetApi {
     ): Observable<OpinetResponse<List<StationInfo>>>
 
     @GET("detailById.do")
-    fun getStationDetail(@Query("id") stationCode: String): Single<OpinetResponse<StationDetail>>
+    fun getStationDetail(@Query("id") stationCode: String): Observable<OpinetResponse<StationDetail>>
 }

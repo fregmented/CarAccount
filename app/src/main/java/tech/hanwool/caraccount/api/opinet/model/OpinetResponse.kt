@@ -9,5 +9,5 @@ data class OpinetResponse<T> (
 
 data class Oil<T> (
     @SerializedName("OIL")
-    val oil: T
+    val oil: List<T>
 )

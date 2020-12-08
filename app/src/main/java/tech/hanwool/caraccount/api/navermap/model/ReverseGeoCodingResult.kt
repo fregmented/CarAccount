@@ -22,9 +22,9 @@ data class ReverseGeoCodingResult (
         data class Region(
             val area0: Area,
             val area1: Area,
-            val area2: Area?,
-            val area3: Area?,
-            val area4: Area?,
+            val area2: Area,
+            val area3: Area,
+            val area4: Area,
             val area5: Area?,
         ) {
             data class Area(

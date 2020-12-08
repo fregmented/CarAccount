@@ -23,7 +23,7 @@ object NaverMapApiClient {
 
     init {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
         okHttpClient = OkHttpClient().newBuilder().apply {
             addInterceptor(httpLoggingInterceptor)
