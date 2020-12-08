@@ -1,4 +1,4 @@
-package tech.hanwool.caraccount.app.view
+package tech.hanwool.caraccount.database.view
 
 import androidx.room.DatabaseView
 import tech.hanwool.caraccount.database.model.AccountLog

@@ -1,9 +1,7 @@
-package tech.hanwool.caraccount.app.view
+package tech.hanwool.caraccount.database.view
 
 import androidx.room.DatabaseView
-import androidx.room.TypeConverters
 import tech.hanwool.caraccount.database.model.Car
-import tech.hanwool.caraccount.database.util.FuelTypeConverter
 
 @DatabaseView("SELECT * FROM car")
 data class CarView(
