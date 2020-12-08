@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9e004a23bcc9512a3f75998dfbad1200",
+    "identityHash": "776b580371c88f41744f7f41fd1eaadc",
     "entities": [
       {
         "tableName": "car",
@@ -103,6 +103,32 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "district_codes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `code` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [
@@ -113,11 +139,15 @@
       {
         "viewName": "AccountLogView",
         "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT * from account_log"
+      },
+      {
+        "viewName": "DistrictCodeView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT * FROM district_codes"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9e004a23bcc9512a3f75998dfbad1200')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '776b580371c88f41744f7f41fd1eaadc')"
     ]
   }
 }
