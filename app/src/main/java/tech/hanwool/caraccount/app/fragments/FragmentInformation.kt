@@ -19,11 +19,14 @@ import tech.hanwool.caraccount.api.navermap.NaverMapApiClient
 import tech.hanwool.caraccount.api.navermap.model.Coordinate
 import tech.hanwool.caraccount.api.opinet.OpinetApiClient
 import tech.hanwool.caraccount.api.opinet.model.FuelTypeCode
+import tech.hanwool.caraccount.database.CarAccountDatabase
 import tech.hanwool.caraccount.databinding.FragmentInformationBinding
 
 class FragmentInformation: BaseFragment<FragmentInformationBinding>() {
 
     var locationManager: LocationManager? = null
+    var fuelType: FuelTypeCode? = null
+    var fuelCode: String? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_information
 
@@ -35,6 +38,10 @@ class FragmentInformation: BaseFragment<FragmentInformationBinding>() {
     override fun onResume() {
         super.onResume()
         Log.i(TAG, "onResume")
+
+        fuelType = FuelTypeCode.valueOf(context?.getSharedPreferences(getString(R.string.pref_main), Context.MODE_PRIVATE)
+            ?.getString(getString(R.string.pref_fuel_type), FuelTypeCode.LPG.name) ?: FuelTypeCode.GASOLINE.name)
+        fuelCode = fuelType?.javaClass?.getField(fuelType?.name)?.getAnnotation(SerializedName::class.java)?.value ?: FuelTypeCode.GASOLINE.name
         loadAllAreaFuelPrice()
         loadLocalFuelPrice()
     }
@@ -44,24 +51,16 @@ class FragmentInformation: BaseFragment<FragmentInformationBinding>() {
         locationManager?.removeUpdates(locationChangeListener)
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
     private fun loadAllAreaFuelPrice() {
         OpinetApiClient.client.getAvrgPriceAll()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                val fuelType: FuelTypeCode = FuelTypeCode.valueOf(context?.getSharedPreferences(getString(R.string.pref_main), Context.MODE_PRIVATE)
-                    ?.getString(getString(R.string.pref_fuel_type), FuelTypeCode.LPG.name) ?: FuelTypeCode.GASOLINE.name)
-                val fuelCode = fuelType.javaClass.getField(fuelType.name)
-                    .getAnnotation(SerializedName::class.java)?.value
+            .subscribe { result ->
 
-                mBinding?.fuelType?.text = resources.getStringArray(R.array.fuel_type_name)[fuelType.ordinal]
-                val price = it.result.oil.find {
+                mBinding?.fuelType = fuelType!!
+                val price = result.result.oil.find {
                     Log.i(TAG, "it: ${it.productCode}, $fuelCode")
-                    it.productCode == fuelCode
+                    it.productCode == fuelType
                 }
                 Log.i(TAG, "PRICE: $price")
                 mBinding?.allAreaPrice = price
@@ -69,10 +68,21 @@ class FragmentInformation: BaseFragment<FragmentInformationBinding>() {
     }
 
     private fun loadLocalFuelPrice() {
+        NaverMapApiClient.client.reverseGeoCoding(Coordinate(33.487745228337154, 126.48424893190534))
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { result->
+                    Log.w(TAG, "REVERSE_GEO: $result")
+//                    OpinetApiClient.client.getAvrgPriceInDistrict()
+                },
+                { th ->
+                    Log.e(TAG, "REVERSE_GEO ERROR", th)
+                }
+            )
         if(!checkPermission()) {
             locationManager =
                 context?.applicationContext?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            mBinding?.locationString = "서울 금천구"
             if (checkGpsAndEnable(locationManager!!)) {
                 locationManager!!.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
@@ -114,12 +124,40 @@ class FragmentInformation: BaseFragment<FragmentInformationBinding>() {
         NaverMapApiClient.client.reverseGeoCoding(Coordinate(it.latitude, it.longitude))
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess{ result ->
-                Log.w(TAG, "REVERSE_GEO: $result")
-            }
-            .doOnError{ th ->
-                Log.e(TAG, "REVERSE_GEO ERROR", th)
-            }
+            .subscribe(
+                { result->
+                    Log.w(TAG, "REVERSE_GEO: $result")
+                    val locationString  = "${result.results[0].region.area1.name} ${result.results[0].region.area2.name}"
+                    mBinding?.locationString = locationString
+                    CarAccountDatabase.getInstance(requireContext()).districtCodeDao().get(locationString)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            { districtCode ->
+                                Log.d(TAG, "districtCode: $districtCode")
+                                OpinetApiClient.client.getAvrgPriceInDistrict(metropolitanCode = districtCode.code.substring(0, 2),
+                                    districtCode = districtCode.code,
+                                    fuelTypeCode = fuelType)
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                        { priceResult ->
+                                            mBinding?.localPrice = priceResult.result.oil[0]
+                                        },
+                                        { th->
+                                            Log.e(TAG, "getAvrgPriceInDistrict ERROR", th)
+                                        }
+                                    )
+                            },
+                            { th ->
+                                Log.e(TAG, "DATABASE RETRIVE ERROR", th)
+                            }
+                        )
+                },
+                { th ->
+                    Log.e(TAG, "REVERSE_GEO ERROR", th)
+                }
+            )
     }
     companion object{
         val TAG = FragmentInformation::class.java.simpleName

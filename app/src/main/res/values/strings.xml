@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">CarAccount</string>
-    <string name="current_avrg_fuel_price_label">현재 전국 평균유가</string>
+    <string name="current_avrg_fuel_price_label">전국</string>
     <string name="current_local_fuel_price_label" formatted="false">현재 %s 평균유가</string>
+    <string name="current_price_with_diff" formatted="false">%.2f원\n%.2f원(어제 대비)</string>
     <string-array name="fuel_type_name">
         <item>고급휘발유</item>
         <item>휘발유</item>

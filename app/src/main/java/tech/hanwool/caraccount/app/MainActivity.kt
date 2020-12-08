@@ -7,12 +7,16 @@ import androidx.databinding.DataBindingUtil
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener
 import tech.hanwool.caraccount.R
+import tech.hanwool.caraccount.database.CarAccountDatabase
 import tech.hanwool.caraccount.databinding.ActivityMainBinding
 
 class MainActivity: AppCompatActivity() {
     var mBinding: ActivityMainBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        CarAccountDatabase.getInstance(this)
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         Dexter
             .withContext(this)

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="tech.hanwool.caraccount.api.opinet.model.FuelTypeCode"/>
+        <variable
+            name="price"
+            type="tech.hanwool.caraccount.api.opinet.model.AveragePrice" />
+        <variable
+            name="locationString"
+            type="String" />
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/fuel_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@{price.productCode.name()}"
+                android:textSize="@dimen/text_h2"
+                tools:text="LPG"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/current_avrg_fuel_price_label"
+                app:layout_constraintRight_toRightOf="parent"
+                />
+            <TextView
+                android:id="@+id/current_avrg_fuel_price_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{locationString}"
+                android:textSize="@dimen/text_h3"
+                android:textAlignment="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/fuel_price"
+                app:layout_constraintTop_toBottomOf="@+id/fuel_type"/>
+            <TextView
+                android:id="@+id/fuel_price"
+                android:text="@{@string/current_price_with_diff(price.price, price.diff)}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_normal"
+                android:layout_marginBottom="@dimen/default_margin"
+                android:textAlignment="center"
+                tools:text="9999.00원 \n-999.0원(어제 대비)"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/current_avrg_fuel_price_label" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

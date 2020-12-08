@@ -15,3 +15,16 @@ fun getFloat(view: TextView): Float {
     val num = view.text.toString()
     return num.toFloatOrNull() ?: 0.0f
 }
+
+
+@BindingAdapter("android:text")
+fun setDouble(view: TextView, value: Double) {
+    if(value.isNaN()) view.setText("")
+    else view.setText("$value")
+}
+
+@InverseBindingAdapter(attribute = "android:text")
+fun getDouble(view: TextView): Double {
+    val num = view.text.toString()
+    return num.toDoubleOrNull() ?: 0.0
+}

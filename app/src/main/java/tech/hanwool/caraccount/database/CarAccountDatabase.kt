@@ -1,6 +1,7 @@
 package tech.hanwool.caraccount.database
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -8,6 +9,8 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,19 +48,24 @@ abstract class CarAccountDatabase: RoomDatabase() {
         fun getInstance(context: Context): CarAccountDatabase {
             if(INSTANCE == null) {
                 synchronized(CarAccountDatabase::class.java) {
-                    INSTANCE =
-                        Room.databaseBuilder(context, CarAccountDatabase::class.java, "car_account.db").apply {
-                          addCallback(object : RoomDatabase.Callback() {
-                              override fun onCreate(db: SupportSQLiteDatabase) {
-                                   GlobalScope.launch(Dispatchers.IO){
-                                      val reader = BufferedReader(InputStreamReader(context.resources.openRawResource(R.raw.district_code)))
-                                      val listType: Type = object : TypeToken<List<DistrictCode>>() {}.type
-                                      val codes: List<DistrictCode> = Gson().fromJson(reader, listType)
-                                        getInstance(context).districtCodeDao().insertAll(codes)
-                                  }
-                              }
-                          })
-                        }.build()
+                    INSTANCE = Room.databaseBuilder(context, CarAccountDatabase::class.java, "car_account.db").apply {
+                                addCallback(object : RoomDatabase.Callback() {
+                                    override fun onCreate(db: SupportSQLiteDatabase) {
+                                        GlobalScope.launch(Dispatchers.IO){
+                                            val reader = BufferedReader(InputStreamReader(context.resources.openRawResource(R.raw.district_code)))
+                                            val listType: Type = object : TypeToken<List<DistrictCode>>() {}.type
+                                            val codes: List<DistrictCode> = Gson().fromJson(reader, listType)
+                                            Log.w("DB_PREPOPULATED", "CODES: $codes")
+                                            getInstance(context).districtCodeDao().insertAll(codes)
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .doOnComplete {
+                                                    Log.w("DB_PREPOPULATED", "Insert done!")
+                                                }
+                                        }
+                                    }
+                                })
+                            }.build()
                 }
             }
             return INSTANCE!!
